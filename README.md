@@ -10,15 +10,15 @@
 #### Add it in your root build.gradle at the end of repositories:
 ```gradle
 	allprojects {
-        repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-        }
-        }
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
 ```
 ### Step 2. Add the dependency
 ```gradle
-dependencies {
-	        implementation 'com.github.RUANHAOANDROID:ImagePicker:Tag'
+	dependencies {
+	        implementation 'com.github.RUANHAOANDROID:ImagePicker:3.0.0'
 	}
 ```
