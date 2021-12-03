@@ -6,8 +6,8 @@
 - compileSdkVersion  28
 - targetSdkVersion 28
 ## 引用变更
-### Step 1. Add the JitPack repository to your build file
-#### Add it in your root build.gradle at the end of repositories:
+
+1.Add it in your root build.gradle at the end of repositories:
 ```gradle
 	allprojects {
 		repositories {
@@ -16,7 +16,7 @@
 		}
 	}
 ```
-### Step 2. Add the dependency
+2.Add the dependency
 ```gradle
 	dependencies {
 	        implementation 'com.github.RUANHAOANDROID:ImagePicker:3.0.0'
