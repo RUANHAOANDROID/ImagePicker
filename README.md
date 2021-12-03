@@ -1,11 +1,11 @@
-# 高仿微信图片选择器 [![](https://jitpack.io/v/RUANHAOANDROID/ImagePicker.svg)](https://jitpack.io/#RUANHAOANDROID/ImagePicker)
+## 高仿微信图片选择器 [![](https://jitpack.io/v/RUANHAOANDROID/ImagePicker.svg)](https://jitpack.io/#RUANHAOANDROID/ImagePicker)
 
-## version3.0.0 [![](https://jitpack.io/v/RUANHAOANDROID/ImagePicker.svg)](https://jitpack.io/#RUANHAOANDROID/ImagePicker)
+### version3.0.0
 - 添加了录像功能
 - 支持androidx
 - compileSdkVersion  28
 - targetSdkVersion 28
-## 引用变更
+### 引用变更
 
 1.Add it in your root build.gradle at the end of repositories:
 ```gradle
