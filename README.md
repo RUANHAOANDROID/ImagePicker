@@ -1,7 +1,7 @@
 ## 高仿微信图片选择器 [![](https://jitpack.io/v/RUANHAOANDROID/ImagePicker.svg)](https://jitpack.io/#RUANHAOANDROID/ImagePicker)
 
 ### version3.0.0
-- 添加了录像功能
+- 添加了录像功能(由张凯斌提供)
 - 支持androidx
 - compileSdkVersion  28
 - targetSdkVersion 28
