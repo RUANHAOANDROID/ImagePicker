@@ -2,14 +2,15 @@ package com.lcw.library.imagepicker.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.lcw.library.imagepicker.R;
 import com.lcw.library.imagepicker.data.ItemType;
@@ -34,12 +35,14 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
     private Context mContext;
     private List<MediaFile> mMediaFileList;
     private boolean isShowCamera;
+    private boolean isShowRecordVideo;
 
 
     public ImagePickerAdapter(Context context, List<MediaFile> mediaFiles) {
         this.mContext = context;
         this.mMediaFileList = mediaFiles;
         this.isShowCamera = ConfigManager.getInstance().isShowCamera();
+        this.isShowRecordVideo = ConfigManager.getInstance().isShowRecordVideo();
     }
 
 
@@ -50,6 +53,13 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
                 return ItemType.ITEM_TYPE_CAMERA;
             }
             //如果有相机存在，position位置需要-1
+            position--;
+        }
+        if (isShowRecordVideo) {
+            if (position == 0) {
+                return ItemType.ITEM_TYPE_RECORD_VIDEO;
+            }
+            //如果有录像存在，position位置需要-1
             position--;
         }
         if (mMediaFileList.get(position).getDuration() > 0) {
@@ -64,7 +74,10 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
         if (mMediaFileList == null) {
             return 0;
         }
-        return isShowCamera ? mMediaFileList.size() + 1 : mMediaFileList.size();
+        int count = mMediaFileList.size();
+        if (isShowCamera) count ++;
+        if (isShowRecordVideo) count++;
+        return count;
     }
 
     /**
@@ -74,12 +87,18 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
      * @return
      */
     public MediaFile getMediaFile(int position) {
-        if (isShowCamera) {
+        if (isShowCamera && isShowRecordVideo) {
+            if (position < 2) {
+                return null;
+            }
+            return mMediaFileList.get(position - 2);
+        } else if (isShowCamera || isShowRecordVideo) {
             if (position == 0) {
                 return null;
             }
             return mMediaFileList.get(position - 1);
         }
+
         return mMediaFileList.get(position);
     }
 
@@ -90,6 +109,10 @@ public class ImagePickerAdapter extends RecyclerView.Adapter<ImagePickerAdapter.
         View view;
         if (viewType == ItemType.ITEM_TYPE_CAMERA) {
             view = LayoutInflater.from(mContext).inflate(R.layout.item_recyclerview_camera, null);
+            return new BaseHolder(view);
+        }
+        if (viewType == ItemType.ITEM_TYPE_RECORD_VIDEO) {
+            view = LayoutInflater.from(mContext).inflate(R.layout.item_recyclerview_record_video, null);
             return new BaseHolder(view);
         }
         if (viewType == ItemType.ITEM_TYPE_IMAGE) {

@@ -18,12 +18,14 @@ public class ConfigManager {
 
     private String title;//标题
     private boolean showCamera;//是否显示拍照Item，默认不显示
+    private boolean showRecordVideo;//是否显示录制视频，默认不显示
     private boolean showImage = true;//是否显示图片，默认显示
     private boolean showVideo = true;//是否显示视频，默认显示
     private boolean filterGif = false;//是否过滤GIF图片，默认不过滤
     private int selectionMode = SELECT_MODE_SINGLE;//选择模式，默认单选
     private int maxCount = 1;//最大选择数量，默认为1
-    private boolean singleType;//是否只支持选单类型（图片或者视频）
+    private int maxDuration = 30;//最大拍摄时间，默认为30秒
+    private boolean singleType = true;//是否只支持选单类型（图片或者视频）
     private ArrayList<String> imagePaths;//上一次选择的图片地址集合
 
     private ImageLoader imageLoader;
@@ -60,6 +62,14 @@ public class ConfigManager {
         this.showCamera = showCamera;
     }
 
+    public boolean isShowRecordVideo() {
+        return showRecordVideo;
+    }
+
+    public void setShowRecordVideo(boolean showRecordVideo) {
+        this.showRecordVideo = showRecordVideo;
+    }
+
     public boolean isShowImage() {
         return showImage;
     }
@@ -85,6 +95,14 @@ public class ConfigManager {
             setSelectionMode(SELECT_MODE_MULTI);
         }
         this.maxCount = maxCount;
+    }
+
+    public int getMaxDuration() {
+        return maxDuration;
+    }
+
+    public void setMaxDuration(int maxDuration) {
+        this.maxDuration = maxDuration;
     }
 
     public boolean isFilterGif() {
@@ -128,5 +146,23 @@ public class ConfigManager {
 
     public void setImageLoader(ImageLoader imageLoader) {
         this.imageLoader = imageLoader;
+    }
+
+    /**
+     * 重置设置
+     */
+    public void reset() {
+        title = "";//标题
+        showCamera = false;//是否显示拍照Item，默认不显示
+        showRecordVideo = false;//是否显示录制视频，默认不显示
+        showImage = true;//是否显示图片，默认显示
+        showVideo = true;//是否显示视频，默认显示
+        filterGif = false;//是否过滤GIF图片，默认不过滤
+        selectionMode = SELECT_MODE_SINGLE;//选择模式，默认单选
+        maxCount = 1;//最大选择数量，默认为1
+        maxDuration = 30;//最大拍摄时间，默认为30秒
+        singleType = false;//是否只支持选单类型（图片或者视频）
+        imagePaths = null;//上一次选择的图片地址集合
+        imageLoader = null;
     }
 }

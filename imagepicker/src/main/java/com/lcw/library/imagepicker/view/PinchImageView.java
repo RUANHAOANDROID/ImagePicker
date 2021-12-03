@@ -9,6 +9,10 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,7 +26,7 @@ import java.util.Queue;
  * Time: 下午5:29
  * Email: lichenwei.me@foxmail.com
  */
-public class PinchImageView extends android.support.v7.widget.AppCompatImageView {
+public class PinchImageView extends AppCompatImageView {
 
     ////////////////////////////////配置参数////////////////////////////////
 
@@ -47,25 +51,25 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
     /**
      * 外界点击事件
      *
-     * @see #setOnClickListener(OnClickListener)
+     * @see #setOnClickListener(View.OnClickListener)
      */
-    private OnClickListener mOnClickListener;
+    private View.OnClickListener mOnClickListener;
 
     /**
      * 外界长按事件
      *
-     * @see #setOnLongClickListener(OnLongClickListener)
+     * @see #setOnLongClickListener(View.OnLongClickListener)
      */
-    private OnLongClickListener mOnLongClickListener;
+    private View.OnLongClickListener mOnLongClickListener;
 
     @Override
-    public void setOnClickListener(OnClickListener l) {
+    public void setOnClickListener(View.OnClickListener l) {
         //默认的click会在任何点击情况下都会触发，所以搞成自己的
         mOnClickListener = l;
     }
 
     @Override
-    public void setOnLongClickListener(OnLongClickListener l) {
+    public void setOnLongClickListener(View.OnLongClickListener l) {
         //默认的long click会在任何长按情况下都会触发，所以搞成自己的
         mOnLongClickListener = l;
     }
@@ -583,12 +587,12 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
 
     private void initView() {
         //强制设置图片scaleType为matrix
-        super.setScaleType(ScaleType.MATRIX);
+        super.setScaleType(ImageView.ScaleType.MATRIX);
     }
 
     //不允许设置scaleType，只能用内部设置的matrix
     @Override
-    public void setScaleType(ScaleType scaleType) {
+    public void setScaleType(ImageView.ScaleType scaleType) {
     }
 
 
@@ -1619,7 +1623,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
          * @param scaleType 图片在ImageView中的ScaleType
          * @param result    图片应该在ImageView中展示的矩形
          */
-        public static void calculateScaledRectInContainer(RectF container, float srcWidth, float srcHeight, ScaleType scaleType, RectF result) {
+        public static void calculateScaledRectInContainer(RectF container, float srcWidth, float srcHeight, ImageView.ScaleType scaleType, RectF result) {
             if (container == null || result == null) {
                 return;
             }
@@ -1628,12 +1632,12 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
             }
             //默认scaleType为fit center
             if (scaleType == null) {
-                scaleType = ScaleType.FIT_CENTER;
+                scaleType = ImageView.ScaleType.FIT_CENTER;
             }
             result.setEmpty();
-            if (ScaleType.FIT_XY.equals(scaleType)) {
+            if (ImageView.ScaleType.FIT_XY.equals(scaleType)) {
                 result.set(container);
-            } else if (ScaleType.CENTER.equals(scaleType)) {
+            } else if (ImageView.ScaleType.CENTER.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 matrix.setTranslate((container.width() - srcWidth) * 0.5f, (container.height() - srcHeight) * 0.5f);
@@ -1644,7 +1648,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 result.right += container.left;
                 result.top += container.top;
                 result.bottom += container.top;
-            } else if (ScaleType.CENTER_CROP.equals(scaleType)) {
+            } else if (ImageView.ScaleType.CENTER_CROP.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 float scale;
@@ -1666,7 +1670,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 result.right += container.left;
                 result.top += container.top;
                 result.bottom += container.top;
-            } else if (ScaleType.CENTER_INSIDE.equals(scaleType)) {
+            } else if (ImageView.ScaleType.CENTER_INSIDE.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 float scale;
@@ -1688,7 +1692,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 result.right += container.left;
                 result.top += container.top;
                 result.bottom += container.top;
-            } else if (ScaleType.FIT_CENTER.equals(scaleType)) {
+            } else if (ImageView.ScaleType.FIT_CENTER.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 RectF tempSrc = rectFTake(0, 0, srcWidth, srcHeight);
@@ -1703,7 +1707,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 result.right += container.left;
                 result.top += container.top;
                 result.bottom += container.top;
-            } else if (ScaleType.FIT_START.equals(scaleType)) {
+            } else if (ImageView.ScaleType.FIT_START.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 RectF tempSrc = rectFTake(0, 0, srcWidth, srcHeight);
@@ -1718,7 +1722,7 @@ public class PinchImageView extends android.support.v7.widget.AppCompatImageView
                 result.right += container.left;
                 result.top += container.top;
                 result.bottom += container.top;
-            } else if (ScaleType.FIT_END.equals(scaleType)) {
+            } else if (ImageView.ScaleType.FIT_END.equals(scaleType)) {
                 Matrix matrix = matrixTake();
                 RectF rect = rectFTake(0, 0, srcWidth, srcHeight);
                 RectF tempSrc = rectFTake(0, 0, srcWidth, srcHeight);

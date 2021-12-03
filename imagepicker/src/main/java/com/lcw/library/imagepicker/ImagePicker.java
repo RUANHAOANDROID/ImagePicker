@@ -37,6 +37,8 @@ public class ImagePicker {
                     mImagePicker = new ImagePicker();
                 }
             }
+        } else {
+            ConfigManager.getInstance().reset();
         }
         return mImagePicker;
     }
@@ -61,6 +63,17 @@ public class ImagePicker {
      */
     public ImagePicker showCamera(boolean showCamera) {
         ConfigManager.getInstance().setShowCamera(showCamera);
+        return mImagePicker;
+    }
+
+    /**
+     * 是否支持录像
+     *
+     * @param showRecordVideo
+     * @return
+     */
+    public ImagePicker showRecordVideo(boolean showRecordVideo) {
+        ConfigManager.getInstance().setShowRecordVideo(showRecordVideo);
         return mImagePicker;
     }
 
@@ -133,7 +146,7 @@ public class ImagePicker {
     }
 
     /**
-     * 设置图片选择历史记录
+     * 设置选择器历史记录
      *
      * @param imagePaths
      * @return

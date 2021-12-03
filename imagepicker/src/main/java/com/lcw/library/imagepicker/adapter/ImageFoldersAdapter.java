@@ -1,8 +1,6 @@
 package com.lcw.library.imagepicker.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.lcw.library.imagepicker.ImagePicker;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.lcw.library.imagepicker.R;
 import com.lcw.library.imagepicker.data.MediaFolder;
 import com.lcw.library.imagepicker.manager.ConfigManager;
@@ -106,9 +106,9 @@ public class ImageFoldersAdapter extends RecyclerView.Adapter<ImageFoldersAdapte
     /**
      * 接口回调，Item点击事件
      */
-    private ImageFoldersAdapter.OnImageFolderChangeListener mImageFolderChangeListener;
+    private OnImageFolderChangeListener mImageFolderChangeListener;
 
-    public void setOnImageFolderChangeListener(ImageFoldersAdapter.OnImageFolderChangeListener onItemClickListener) {
+    public void setOnImageFolderChangeListener(OnImageFolderChangeListener onItemClickListener) {
         this.mImageFolderChangeListener = onItemClickListener;
     }
 

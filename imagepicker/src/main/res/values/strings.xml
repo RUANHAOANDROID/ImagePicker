@@ -4,6 +4,8 @@
     <string name="image_picker">图片选择器</string>
     <string name="scanner_image">正在扫描图片..</string>
     <string name="select_image_max">最多选择%1$d张图片</string>
+    <string name="select_video_max">最多选择%1$d个视频</string>
+    <string name="select_img_video_max">最多选择%1$d项</string>
     <string name="confirm">确定</string>
     <string name="confirm_msg">确定（%1$d/%2$d）</string>
     <string name="image_num">%d张</string>
@@ -11,6 +13,7 @@
     <string name="all_media">全部</string>
     <string name="all_video">所有视频</string>
     <string name="take_photo">拍摄图片</string>
+    <string name="record_video">录制视频</string>
     <string name="permission_tip">当前没有读取存储卡或摄像头权限</string>
     <string name="image_select">选择</string>
     <string name="single_type_choose">不能同时选择图片与视频</string>

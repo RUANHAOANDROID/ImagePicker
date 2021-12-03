@@ -10,11 +10,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +17,12 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.lcw.library.imagepicker.ImagePicker;
 import com.lcw.library.imagepicker.R;
@@ -60,11 +61,13 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
      * 启动参数
      */
     private String mTitle;
+    private boolean isShowRecordVideo;
     private boolean isShowCamera;
     private boolean isShowImage;
     private boolean isShowVideo;
     private boolean isSingleType;
     private int mMaxCount;
+    private int mMaxDuration;
     private List<String> mImagePaths;
 
     /**
@@ -114,6 +117,7 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
      */
     private String mFilePath;
     private static final int REQUEST_CODE_CAPTURE = 0x02;//点击拍照标识
+    private static final int REQUEST_CODE_RECORD_VIDEO = 0x03;//点击录像标识
 
     /**
      * 权限相关
@@ -133,15 +137,18 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
     @Override
     protected void initConfig() {
         mTitle = ConfigManager.getInstance().getTitle();
+        isShowRecordVideo = ConfigManager.getInstance().isShowRecordVideo();
         isShowCamera = ConfigManager.getInstance().isShowCamera();
         isShowImage = ConfigManager.getInstance().isShowImage();
         isShowVideo = ConfigManager.getInstance().isShowVideo();
         isSingleType = ConfigManager.getInstance().isSingleType();
         mMaxCount = ConfigManager.getInstance().getMaxCount();
+        mMaxDuration = ConfigManager.getInstance().getMaxDuration();
         SelectionManager.getInstance().setMaxCount(mMaxCount);
 
         //载入历史选择记录
         mImagePaths = ConfigManager.getInstance().getImagePaths();
+        SelectionManager.getInstance().getSelectPaths().clear();
         if (mImagePaths != null && !mImagePaths.isEmpty()) {
             SelectionManager.getInstance().addImagePathsToSelectList(mImagePaths);
         }
@@ -419,11 +426,23 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
                 return;
             }
         }
+        if (isShowRecordVideo) {
+            if ((isShowCamera && position == 1) || (!isShowCamera && position == 0)) {
+                if (!SelectionManager.getInstance().isCanChoose()) {
+                    Toast.makeText(this, String.format(getString(R.string.select_video_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                showRecordVideo();
+                return;
+            }
+        }
 
         if (mMediaFileList != null) {
             DataUtil.getInstance().setMediaData(mMediaFileList);
             Intent intent = new Intent(this, ImagePreActivity.class);
-            if (isShowCamera) {
+            if (isShowCamera && isShowRecordVideo) {
+                intent.putExtra(ImagePreActivity.IMAGE_POSITION, position - 2);
+            } else if (isShowCamera || isShowRecordVideo){
                 intent.putExtra(ImagePreActivity.IMAGE_POSITION, position - 1);
             } else {
                 intent.putExtra(ImagePreActivity.IMAGE_POSITION, position);
@@ -451,6 +470,17 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
             }
         }
 
+        if (isShowRecordVideo) {
+            if ((isShowCamera && position == 1) || (!isShowCamera && position == 0)) {
+                if (!SelectionManager.getInstance().isCanChoose()) {
+                    Toast.makeText(this, String.format(getString(R.string.select_video_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                showRecordVideo();
+                return;
+            }
+        }
+
         //执行选中/取消操作
         MediaFile mediaFile = mImagePickerAdapter.getMediaFile(position);
         if (mediaFile != null) {
@@ -471,7 +501,14 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
             if (addSuccess) {
                 mImagePickerAdapter.notifyItemChanged(position);
             } else {
-                Toast.makeText(this, String.format(getString(R.string.select_image_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                if (isSingleType && mediaFile.getDuration()>0) {
+                    Toast.makeText(this, String.format(getString(R.string.select_video_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                } else if (isSingleType){
+                    Toast.makeText(this, String.format(getString(R.string.select_image_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, String.format(getString(R.string.select_img_video_max), mMaxCount), Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
         updateCommitButton();
@@ -536,6 +573,43 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
     }
 
     /**
+     * 跳转视频录制
+     */
+    private void showRecordVideo(){
+        if (isSingleType) {
+            //如果是单类型选取，判断添加类型是否满足（照片视频不能共存）
+            ArrayList<String> selectPathList = SelectionManager.getInstance().getSelectPaths();
+            if (!selectPathList.isEmpty()) {
+                if (MediaFileUtil.isVideoFileType(selectPathList.get(0))) {
+                    //如果存在视频，就不能拍照了
+                    Toast.makeText(this, getString(R.string.single_type_choose), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        }
+        //拍照存放路径
+        File fileDir = new File(Environment.getExternalStorageDirectory(), "RecordVideo");
+        if (!fileDir.exists()) {
+            fileDir.mkdir();
+        }
+        mFilePath = fileDir.getAbsolutePath() + "/VID_" + System.currentTimeMillis() + ".mp4";
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        Uri uri;
+        if (Build.VERSION.SDK_INT >= 24) {
+            uri = FileProvider.getUriForFile(this, ImagePickerProvider.getFileProviderName(this), new File(mFilePath));
+        } else {
+            uri = Uri.fromFile(new File(mFilePath));
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        //设置视频录制的最长时间
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, mMaxDuration);
+        //设置视频录制的画质
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+        startActivityForResult(intent, REQUEST_CODE_RECORD_VIDEO);
+    }
+
+    /**
      * 当图片文件夹切换时，刷新图片列表数据源
      *
      * @param view
@@ -583,6 +657,20 @@ public class ImagePickerActivity extends BaseActivity implements ImagePickerAdap
 
             if (requestCode == REQUEST_SELECT_IMAGES_CODE) {
                 commitSelection();
+            }
+
+            if (requestCode == REQUEST_CODE_RECORD_VIDEO) {
+                //通知媒体库刷新
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + mFilePath)));
+                //添加到选中集合
+                SelectionManager.getInstance().addImageToSelectList(mFilePath);
+
+                ArrayList<String> list = new ArrayList<>(SelectionManager.getInstance().getSelectPaths());
+                Intent intent = new Intent();
+                intent.putStringArrayListExtra(ImagePicker.EXTRA_SELECT_IMAGES, list);
+                setResult(RESULT_OK, intent);
+                SelectionManager.getInstance().removeAll();//清空选中记录
+                finish();
             }
         }
     }
